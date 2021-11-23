@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://unpkg.com/vue@next"></script>
+
+  <title>Vue Speed Logger</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    button {
+      font-size: 1em;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" style="max-width: 400px; height: 100vh; margin: 0 auto; display: flex; flex-direction: column; font-size: 1.5em;">
+    <div style="text-align: center; font-size: 5em;">
+      {{nowTime ?? "null"}}
+    </div>
+
+    <div style="display: flex; height: 60px;">
+      <button style="flex-grow: 1;" @click="nowTime = (nowTime ?? 0) - 1">-</button>
+      <button style="flex-grow: 1;" @click="nowTime = (nowTime ?? 0) + 1">+</button>
+    </div>
+
+    <div style="height: 12px;"></div>
+
+    <div style="display: flex; height: 60px;">
+      <button style="flex-grow: 1;" @click="move(-1)"><</button>
+
+      <button style="flex-grow: 4;" @click="setTime(); move(+1)">
+        {{nowIndex}} <br> <div style="font-size: 0.5em; margin: -0.2em 0;">({{times[nowIndex] ?? "null"}})</div> 
+      </button>
+
+      <button style="flex-grow: 1;" @click="move(+1)">></button>
+    </div>
+
+    <div style="display: flex; height: 40px;">
+      <button style="flex-grow: 1;" @click="copy(times.join('\n'))">csv</button>
+      <button style="flex-grow: 1;" @click="copy(JSON.stringify(times))">json</button>
+    </div>
+  </div>
+
+  <script>
+    const App = {
+      data() {
+        return {
+          times: [],
+          nowTime: 0,
+          nowIndex: 0
+        }
+      },
+      methods: {
+        move(num) {
+          this.nowIndex = this.nowIndex + num
+          this.nowTime = this.times[this.nowIndex] ?? this.nowTime
+        },
+        setTime() {
+          if (this.times[this.nowIndex] !== undefined) {
+            text = "上書きしても良いですか？"
+            if (!window.confirm(text)) return
+          }
+          this.times[this.nowIndex] = this.nowTime
+          this.times = [...this.times]
+        },
+        copy(value) {
+          navigator.clipboard.writeText(value)
+          console.log(value)
+        }
+      }
+    }
+
+    const app = Vue.createApp(App)
+  </script>
+
+  <script>
+    app.mount('#app')
+  </script>
+</body>
+
+</html>
